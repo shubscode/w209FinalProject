@@ -2,7 +2,7 @@
 
 function barChart() {
 
-  var margin = {top: 20, right: 20, bottom: 30, left: 40},
+  var margin = {top: 20, right: 40, bottom: 30, left: 40},
     width = 400,
     height = 400,
     innerWidth = width - margin.left - margin.right,
@@ -40,14 +40,14 @@ function barChart() {
       xScale.rangeRound([0, innerWidth])
         .domain(data.map(function(d) { return xValue(d); }));
       yScale.rangeRound([innerHeight, 0])
-        .domain([0, d3.max(data, function(d) { return yValue(d); })]);
+        .domain([ Math.min(d3.min(data, function(d) { return yValue(d); }) * 1.2, 0), d3.max(data, function(d) { return yValue(d); })]);
 
       g.select(".x.axis")
           .attr("transform", "translate(0," + innerHeight + ")")
           .call(d3.axisBottom(xScale));
 
       g.select(".y.axis")
-          .call(d3.axisLeft(yScale))
+          .call(d3.axisLeft(yScale).ticks(10,"s")) //pass axis format
         .append("text")
           .attr("transform", "rotate(-90)")
           .attr("y", 6)
@@ -65,6 +65,14 @@ function barChart() {
           .attr("y", Y)
           .attr("width", xScale.bandwidth())
           .attr("height", function(d) { return innerHeight - Y(d); })
+          .attr("id", function(d) {
+            console.log(d.value);
+            if (d.value >=  0) {
+              return "barBlue";
+            } else {
+              return "barRed";
+            }
+          })
           .on("mouseover", onMouseOver);
 
       bars.exit().remove();
